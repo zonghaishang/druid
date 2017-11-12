@@ -15,8 +15,6 @@
  */
 package com.alibaba.druid.sql.parser;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.util.JdbcUtils;
 import com.alibaba.druid.util.Utils;
 
 import java.util.Arrays;
@@ -193,13 +191,13 @@ public class Keywords {
         }
     }
 
-public Token getKeyword(long hash) {
-    int index = Arrays.binarySearch(hashArray, hash);
-    if (index < 0) {
-        return null;
+    public Token getKeyword(long hash) {
+        int index = Arrays.binarySearch(hashArray, hash);
+        if (index < 0) {
+            return null;
+        }
+        return tokens[index];
     }
-    return tokens[index];
-}
 
     public Token getKeyword(String key) {
         long k = Utils.fnv_64_lower(key);

@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.statement.*;
-import com.alibaba.druid.util.FnvHash;
 import com.alibaba.druid.util.JdbcConstants;
 
 public class SQLCreateTableParser extends SQLDDLParser {
@@ -88,7 +87,7 @@ public class SQLCreateTableParser extends SQLDDLParser {
 
         createTable.setName(this.exprParser.name());
 
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
 
             for (; ; ) {
@@ -119,7 +118,7 @@ public class SQLCreateTableParser extends SQLDDLParser {
                 if (lexer.token == Token.COMMA) {
                     lexer.nextToken();
 
-                    if (lexer.token == Token.RPAREN) { // compatible for sql server
+                    if (lexer.token == Token.RIGHT_PARENTHESES) { // compatible for sql server
                         break;
                     }
                     continue;
@@ -128,14 +127,14 @@ public class SQLCreateTableParser extends SQLDDLParser {
                 break;
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             if (lexer.identifierEquals("INHERITS")) {
                 lexer.nextToken();
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 SQLName inherits = this.exprParser.name();
                 createTable.setInherits(new SQLExprTableSource(inherits));
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
         }
 

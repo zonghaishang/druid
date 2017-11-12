@@ -71,7 +71,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
             if (lexer.token() == Token.LPAREN) {
                 lexer.nextToken();
                 this.parseExecParameter(execStmt.getParameters(), execStmt);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             } else {
                 SQLName sqlNameName = this.exprParser.name();
 
@@ -129,7 +129,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
      * @author zz [455910092@qq.com]
      */
     public void parseExecParameter(Collection<SQLServerParameter> exprCol, SQLObject parent) {
-        if (lexer.token() == Token.RPAREN || lexer.token() == Token.RBRACKET) {
+        if (lexer.token() == Token.RIGHT_PARENTHESES || lexer.token() == Token.RIGHT_BRACKET) {
             return;
         }
 
@@ -203,7 +203,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
                         if (lexer.token() == Token.COMMA) {
                             lexer.nextToken();
 
-                            if (lexer.token() == Token.RPAREN) {
+                            if (lexer.token() == Token.RIGHT_PARENTHESES) {
                                 break;
                             }
                             continue;
@@ -211,7 +211,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
 
                         break;
                     }
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
                 break;
             } else if (lexer.token() == Token.CURSOR) {
@@ -276,7 +276,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
         if (lexer.token() == (Token.LPAREN)) {
             lexer.nextToken();
             this.exprParser.exprList(insertStatement.getColumns(), insertStatement);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
         
         SQLServerOutput output = this.getExprParser().parserOutput();
@@ -292,7 +292,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
                 SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
                 this.exprParser.exprList(values.getValues(), values);
                 insertStatement.addValueCause(values);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 if (!parseCompleteValues && insertStatement.getValuesList().size() >= parseValuesSize) {
                     lexer.skipToEOF();
@@ -472,7 +472,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
 
         this.parseStatementList(stmt.getStatements(), 1, stmt);
         
-        if(lexer.token() == Token.SEMI) {
+        if(lexer.token() == Token.SEMICOLON) {
             lexer.nextToken();
         }
 
@@ -532,7 +532,7 @@ public class SQLServerStatementParser extends SQLStatementParser {
                 acceptIdentifier("DELAYED_DURABILITY");
                 accept(Token.EQ);
                 stmt.setDelayedDurability(this.exprParser.expr());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
         }

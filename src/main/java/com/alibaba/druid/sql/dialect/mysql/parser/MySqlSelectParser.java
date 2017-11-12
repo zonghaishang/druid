@@ -83,7 +83,7 @@ public class MySqlSelectParser extends SQLSelectParser {
 
             SQLSelectQuery select = query();
             select.setBracket(true);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -219,7 +219,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             if (lexer.token() == Token.SELECT || lexer.token() == Token.WITH) {
                 SQLSelect select = select();
 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 SQLSelectQuery query = queryRest(select.getQuery());
                 if (query instanceof SQLUnionQuery) {
@@ -230,10 +230,10 @@ public class MySqlSelectParser extends SQLSelectParser {
                 }
             } else if (lexer.token() == Token.LPAREN) {
                 tableSource = parseTableSource();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             } else {
                 tableSource = parseTableSource();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             return parseTableSourceRest(tableSource);
@@ -423,7 +423,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             lexer.nextToken();
             accept(Token.LPAREN);
             this.exprParser.names(((SQLExprTableSource) tableSource).getPartitions(), tableSource);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         return tableSource;
@@ -459,7 +459,7 @@ public class MySqlSelectParser extends SQLSelectParser {
             lexer.nextToken();
             accept(Token.LPAREN);
             this.exprParser.names(((SQLExprTableSource) tableSource).getPartitions(), tableSource);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         return super.parseTableSourceRest(tableSource);
@@ -496,7 +496,7 @@ public class MySqlSelectParser extends SQLSelectParser {
         } else {
             this.exprParser.names(hint.getIndexList());
         }
-        accept(Token.RPAREN);
+        accept(Token.RIGHT_PARENTHESES);
     }
 
     public SQLUnionQuery unionRest(SQLUnionQuery union) {

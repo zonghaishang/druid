@@ -63,7 +63,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                 }
                 accept(Token.LPAREN);
                 this.getExprParser().parseSegmentAttributes(oidIndex);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 stmt.setOidIndex(oidIndex);
             }
@@ -145,7 +145,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                 stmt.setCluster(cluster);
                 accept(Token.LPAREN);
                 this.exprParser.names(stmt.getClusterColumns(), cluster);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 continue;
 //            } else if (lexer.token() == Token.STORAGE) {
 //                OracleStorageClause storage = ((OracleExprParser) this.exprParser).parseStorage();
@@ -192,7 +192,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                             if (lexer.token() == Token.COMMA) {
                                 lexer.nextToken();
                                 continue;
-                            } else if (lexer.token() == Token.RPAREN) {
+                            } else if (lexer.token() == Token.RIGHT_PARENTHESES) {
                                 lexer.nextToken();
                                 break;
                             }
@@ -300,7 +300,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                     }
 
                     organization.setExternalDirectoryRecordFormat(recordFormat);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 } else if (lexer.token() == Token.USING) {
                     lexer.nextToken();
                     acceptIdentifier("CLOB");
@@ -311,9 +311,9 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
             acceptIdentifier("LOCATION");
             accept(Token.LPAREN);
             this.exprParser.exprList(organization.getExternalDirectoryLocation(), organization);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             if (lexer.token() == Token.REJECT) {
                 lexer.nextToken();
@@ -334,7 +334,7 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
 
         accept(Token.LPAREN);
         partitionByList.addColumn(this.exprParser.expr());
-        accept(Token.RPAREN);
+        accept(Token.RIGHT_PARENTHESES);
 
         this.getExprParser().parsePartitionByRest(partitionByList);
 
@@ -368,13 +368,13 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                     continue;
                 }
 
-                if (lexer.token() == Token.RPAREN) {
+                if (lexer.token() == Token.RIGHT_PARENTHESES) {
                     break;
                 }
 
                 throw new ParserException("TODO " + lexer.info());
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             if (lexer.identifierEquals("ALWAYS")) {
                 lexer.nextToken();
@@ -416,13 +416,13 @@ public class OracleCreateTableParser extends SQLCreateTableParser {
                     continue;
                 }
 
-                if (lexer.token() == Token.RPAREN) {
+                if (lexer.token() == Token.RIGHT_PARENTHESES) {
                     break;
                 }
 
                 throw new ParserException("TODO " + lexer.info());
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
             acceptIdentifier("COLUMNS");
             idKey.setParent(stmt);
             stmt.getTableElementList().add(idKey);

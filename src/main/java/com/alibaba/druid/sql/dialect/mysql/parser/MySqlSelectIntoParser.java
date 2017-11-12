@@ -68,11 +68,11 @@ public class MySqlSelectIntoParser extends SQLSelectParser {
 
     @Override
     public SQLSelectQuery query() {
-        if (lexer.token() == (Token.LPAREN)) {
+        if (lexer.token() == (Token.LEFT_PARENTHESES)) {
             lexer.nextToken();
 
             SQLSelectQuery select = query();
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -325,14 +325,14 @@ public class MySqlSelectIntoParser extends SQLSelectParser {
             }
         }
 
-        accept(Token.LPAREN);
+        accept(Token.LEFT_PARENTHESES);
         if (lexer.token() == Token.PRIMARY) {
             lexer.nextToken();
             hint.getIndexList().add(new SQLIdentifierExpr("PRIMARY"));
         } else {
             this.exprParser.names(hint.getIndexList());
         }
-        accept(Token.RPAREN);
+        accept(Token.RIGHT_PARENTHESES);
     }
 
     public SQLUnionQuery unionRest(SQLUnionQuery union) {

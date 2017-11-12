@@ -120,7 +120,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
             lexer.nextToken();
 
             SQLSelectQuery select = query();
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -192,7 +192,7 @@ public class SQLServerSelectParser extends SQLSelectParser {
                 }
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         return super.parseTableSourceRest(tableSource);

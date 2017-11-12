@@ -74,7 +74,7 @@ public class PGLexer extends Lexer {
 
     public PGLexer(String input, SQLParserFeature... features){
         super(input);
-        super.keywods = DEFAULT_PG_KEYWORDS;
+        super.keywords = DEFAULT_PG_KEYWORDS;
         super.dbType = JdbcConstants.POSTGRESQL;
         for (SQLParserFeature feature : features) {
             config(feature, true);
@@ -97,7 +97,7 @@ public class PGLexer extends Lexer {
                 scanChar();
                 if (!hasSpecial) {
                     initBuff(bufPos);
-                    arraycopy(mark + 1, buf, 0, bufPos);
+                    arrayCopy(mark + 1, buf, 0, bufPos);
                     hasSpecial = true;
                 }
 
@@ -144,7 +144,7 @@ public class PGLexer extends Lexer {
                     break;
                 } else {
                     initBuff(bufPos);
-                    arraycopy(mark + 1, buf, 0, bufPos);
+                    arrayCopy(mark + 1, buf, 0, bufPos);
                     hasSpecial = true;
                     putChar('\'');
                     putChar('\'');
@@ -177,9 +177,9 @@ public class PGLexer extends Lexer {
             scanChar();
             if (ch == '>') {
                 scanChar();
-                token = Token.POUNDGTGT;
+                token = Token.POUND_GT_GT;
             } else {
-                token = Token.POUNDGT;
+                token = Token.POUND_GT;
             }
         } else {
             token = Token.POUND;

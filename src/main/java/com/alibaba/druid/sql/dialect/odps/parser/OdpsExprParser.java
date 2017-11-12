@@ -95,7 +95,7 @@ public class OdpsExprParser extends SQLExprParser {
         if (lexer.token() == Token.AS) {
             lexer.nextToken();
 
-            if (lexer.token() == Token.LPAREN) {
+            if (lexer.token() == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
 
                 OdpsUDTFSQLSelectItem selectItem = new OdpsUDTFSQLSelectItem();
@@ -115,7 +115,7 @@ public class OdpsExprParser extends SQLExprParser {
                     break;
                 }
 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 return selectItem;
             } else {
@@ -141,18 +141,36 @@ public class OdpsExprParser extends SQLExprParser {
             return expr;
         }
         
-        if (lexer.token() == Token.LBRACKET) {
+        if (lexer.token() == Token.LEFT_BRACKET) {
             SQLArrayExpr array = new SQLArrayExpr();
             array.setExpr(expr);
             lexer.nextToken();
             this.exprList(array.getValues(), array);
-            accept(Token.RBRACKET);
+            accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         }
         
         return super.primaryRest(expr);
     }
     
+    public SQLExpr equalityRest(SQLExpr expr) {
+        if (lexer.token() == Token.EQ_EQ) {
+            SQLExpr rightExp;
+            lexer.nextToken();
+            try {
+                rightExp = bitOr();
+            } catch (EOFParserException e) {
+                throw new ParserException("EOF, " + expr + "=", e);
+            }
+            rightExp = equalityRest(rightExp);
+
+            expr = new SQLBinaryOpExpr(expr, SQLBinaryOperator.Equality, rightExp, getDbType());
+            
+            return expr;
+        }
+        
+        return super.equalityRest(expr);
+    }
 
     public SQLExpr relationalRest(SQLExpr expr) {
         if (lexer.identifierEquals("REGEXP")) {

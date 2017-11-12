@@ -17,7 +17,8 @@ package com.alibaba.druid.sql.parser;
 
 public enum SQLParserFeature {
     KeepInsertValueClauseOriginalString,
-    KeepSelectListOriginalString, // for improved sql parameterized performance
+    // for improved sql parameterized performance
+    KeepSelectListOriginalString,
     UseInsertColumnsCache,
     EnableSQLBinaryOpExprGroup,
     OptimizedForParameterized,

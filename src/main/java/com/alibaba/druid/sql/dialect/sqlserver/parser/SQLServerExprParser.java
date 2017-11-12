@@ -80,10 +80,10 @@ public class SQLServerExprParser extends SQLExprParser {
 
     public SQLExpr primary() {
 
-        if (lexer.token() == Token.LBRACKET) {
+        if (lexer.token() == Token.LEFT_BRACKET) {
             lexer.nextToken();
             SQLExpr name = this.name();
-            accept(Token.RBRACKET);
+            accept(Token.RIGHT_BRACKET);
             return primaryRest(name);
         }
 
@@ -96,7 +96,7 @@ public class SQLServerExprParser extends SQLExprParser {
 
     public SQLExpr primaryRest(SQLExpr expr) {
         final Token token = lexer.token();
-        if (token == Token.DOTDOT) {
+        if (token == Token.DOT_DOT) {
             expr = nameRest((SQLName) expr);
         } else if (lexer.identifierEquals(FnvHash.Constants.VALUE)
                 && expr instanceof SQLIdentifierExpr) {
@@ -119,7 +119,7 @@ public class SQLServerExprParser extends SQLExprParser {
     protected SQLExpr dotRest(SQLExpr expr) {
         boolean backet = false;
 
-        if (lexer.token() == Token.LBRACKET) {
+        if (lexer.token() == Token.LEFT_BRACKET) {
             lexer.nextToken();
             backet = true;
         }
@@ -127,18 +127,18 @@ public class SQLServerExprParser extends SQLExprParser {
         expr = super.dotRest(expr);
 
         if (backet) {
-            accept(Token.RBRACKET);
+            accept(Token.RIGHT_BRACKET);
         }
 
         return expr;
     }
 
     public SQLName nameRest(SQLName expr) {
-        if (lexer.token() == Token.DOTDOT) {
+        if (lexer.token() == Token.DOT_DOT) {
             lexer.nextToken();
 
             boolean backet = false;
-            if (lexer.token() == Token.LBRACKET) {
+            if (lexer.token() == Token.LEFT_BRACKET) {
                 lexer.nextToken();
                 backet = true;
             }
@@ -146,7 +146,7 @@ public class SQLServerExprParser extends SQLExprParser {
             lexer.nextToken();
 
             if (backet) {
-                accept(Token.RBRACKET);
+                accept(Token.RIGHT_BRACKET);
             }
 
             SQLServerObjectReferenceExpr owner = new SQLServerObjectReferenceExpr(expr);
@@ -175,7 +175,7 @@ public class SQLServerExprParser extends SQLExprParser {
             }
 
             if (paren) {
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             if (lexer.token() == Token.PERCENT) {
@@ -212,7 +212,7 @@ public class SQLServerExprParser extends SQLExprParser {
                 if (lexer.token() == (Token.LPAREN)) {
                     lexer.nextToken();
                     this.exprList(output.getColumns(), output);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
             }
             return output;
@@ -254,7 +254,7 @@ public class SQLServerExprParser extends SQLExprParser {
                 SQLIntegerExpr seed = (SQLIntegerExpr) this.primary();
                 accept(Token.COMMA);
                 SQLIntegerExpr increment = (SQLIntegerExpr) this.primary();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 
                 identity.setSeed((Integer) seed.getNumber());
                 identity.setIncrement((Integer) increment.getNumber());

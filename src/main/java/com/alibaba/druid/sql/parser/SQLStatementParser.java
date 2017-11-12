@@ -118,7 +118,7 @@ public class SQLStatementParser extends SQLParser {
                         stmt.addAfterComment(lexer.readAndResetComments());
                     }
                     return;
-                case SEMI: {
+                case SEMICOLON: {
                     int line0 = lexer.getLine();
                     lexer.nextToken();
                     int line1 = lexer.getLine();
@@ -315,7 +315,7 @@ public class SQLStatementParser extends SQLParser {
                     break;
             }
 
-            if (lexer.token == Token.LBRACE || lexer.identifierEquals("CALL")) {
+            if (lexer.token == Token.LEFT_BRACE || lexer.identifierEquals("CALL")) {
                 SQLCallStatement stmt = parseCall();
                 statementList.add(stmt);
                 continue;
@@ -377,16 +377,16 @@ public class SQLStatementParser extends SQLParser {
                 continue;
             }
 
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 char markChar = lexer.current();
                 int markBp = lexer.bp();
 
                 do {
                     lexer.nextToken();
-                } while (lexer.token == Token.LPAREN);
+                } while (lexer.token == Token.LEFT_PARENTHESES);
 
                 if (lexer.token == Token.SELECT) {
-                    lexer.reset(markBp, markChar, Token.LPAREN);
+                    lexer.reset(markBp, markChar, Token.LEFT_PARENTHESES);
                     SQLStatement stmt = parseSelect();
                     statementList.add(stmt);
                     continue;
@@ -586,12 +586,12 @@ public class SQLStatementParser extends SQLParser {
         }
 
         SQLReturnStatement stmt = new SQLReturnStatement();
-        if (lexer.token != Token.SEMI) {
+        if (lexer.token != Token.SEMICOLON) {
             SQLExpr expr = this.exprParser.expr();
             stmt.setExpr(expr);
         }
 
-        accept(Token.SEMI);
+        accept(Token.SEMICOLON);
         stmt.setAfterSemi(true);
 
         return stmt;
@@ -671,7 +671,7 @@ public class SQLStatementParser extends SQLParser {
                 stmt.setObjectType(SQLObjectType.DATABASE);
             }
 
-            if (stmt.getObjectType() != null && lexer.token == Token.COLONCOLON) {
+            if (stmt.getObjectType() != null && lexer.token == Token.COLON_COLON) {
                 lexer.nextToken(); // sql server
             }
 
@@ -967,7 +967,7 @@ public class SQLStatementParser extends SQLParser {
             if (privilege != null) {
                 SQLExpr expr = new SQLIdentifierExpr(privilege);
 
-                if (lexer.token == Token.LPAREN) {
+                if (lexer.token == Token.LEFT_PARENTHESES) {
                     expr = this.exprParser.primaryRest(expr);
                 }
 
@@ -1091,11 +1091,11 @@ public class SQLStatementParser extends SQLParser {
 
                         addPartition.setIfNotExists(ifNotExists);
 
-                        accept(Token.LPAREN);
+                        accept(Token.LEFT_PARENTHESES);
 
                         parseAssignItems(addPartition.getPartitions(), addPartition);
 
-                        accept(Token.RPAREN);
+                        accept(Token.RIGHT_PARENTHESES);
 
                         stmt.addItem(addPartition);
                     } else {
@@ -1226,11 +1226,11 @@ public class SQLStatementParser extends SQLParser {
 
                     SQLAlterTableRenamePartition renamePartition = new SQLAlterTableRenamePartition();
 
-                    accept(Token.LPAREN);
+                    accept(Token.LEFT_PARENTHESES);
 
                     parseAssignItems(renamePartition.getPartition(), renamePartition);
 
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
 
                     if (lexer.token == Token.ENABLE) {
                         lexer.nextToken();
@@ -1268,11 +1268,11 @@ public class SQLStatementParser extends SQLParser {
                     accept(Token.TO);
                     accept(Token.PARTITION);
 
-                    accept(Token.LPAREN);
+                    accept(Token.LEFT_PARENTHESES);
 
                     parseAssignItems(renamePartition.getTo(), renamePartition);
 
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
 
                     stmt.addItem(renamePartition);
                 } else if (lexer.identifierEquals("TOUCH")) {
@@ -1282,9 +1282,9 @@ public class SQLStatementParser extends SQLParser {
                     if (lexer.token == Token.PARTITION) {
                         lexer.nextToken();
 
-                        accept(Token.LPAREN);
+                        accept(Token.LEFT_PARENTHESES);
                         parseAssignItems(item.getPartition(), item);
-                        accept(Token.RPAREN);
+                        accept(Token.RIGHT_PARENTHESES);
                     }
 
                     stmt.addItem(item);
@@ -1410,12 +1410,12 @@ public class SQLStatementParser extends SQLParser {
 
         dropPartition.setIfExists(ifExists);
 
-        if (lexer.token == Token.LPAREN) {
-            accept(Token.LPAREN);
+        if (lexer.token == Token.LEFT_PARENTHESES) {
+            accept(Token.LEFT_PARENTHESES);
 
             parseAssignItems(dropPartition.getPartitions(), dropPartition);
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
             
             if (lexer.identifierEquals("PURGE")) {
                 lexer.nextToken();
@@ -1818,22 +1818,22 @@ public class SQLStatementParser extends SQLParser {
             }
         }
 
-        if (lexer.token == (Token.LPAREN)) {
+        if (lexer.token == (Token.LEFT_PARENTHESES)) {
             lexer.nextToken();
             parseInsertColumns(insertStatement);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.token == Token.VALUES) {
             lexer.nextToken();
             for (;;) {
-                if (lexer.token == Token.LPAREN) {
+                if (lexer.token == Token.LEFT_PARENTHESES) {
                     lexer.nextToken();
 
                     SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
                     this.exprParser.exprList(values.getValues(), values);
                     insertStatement.addValueCause(values);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 } else { // oracle
                     SQLInsertStatement.ValuesClause values = new SQLInsertStatement.ValuesClause();
                     SQLExpr value = this.exprParser.expr();
@@ -1848,7 +1848,7 @@ public class SQLStatementParser extends SQLParser {
                     break;
                 }
             }
-        } else if (acceptSubQuery && (lexer.token == Token.SELECT || lexer.token == Token.LPAREN)) {
+        } else if (acceptSubQuery && (lexer.token == Token.SELECT || lexer.token == Token.LEFT_PARENTHESES)) {
             SQLSelect select = this.createSQLSelectParser().select();
             insertStatement.setQuery(select);
         }
@@ -1913,7 +1913,7 @@ public class SQLStatementParser extends SQLParser {
     public SQLCallStatement parseCall() {
 
         boolean brace = false;
-        if (lexer.token == Token.LBRACE) {
+        if (lexer.token == Token.LEFT_BRACE) {
             lexer.nextToken();
             brace = true;
         }
@@ -1930,14 +1930,14 @@ public class SQLStatementParser extends SQLParser {
 
         stmt.setProcedureName(exprParser.name());
 
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
             exprParser.exprList(stmt.getParameters(), stmt);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (brace) {
-            accept(Token.RBRACE);
+            accept(Token.RIGHT_BRACE);
             stmt.setBrace(true);
         }
 
@@ -2229,9 +2229,9 @@ public class SQLStatementParser extends SQLParser {
             SQLName definer = this.exprParser.name();
             stmt.setDefiner(definer);
 
-            if (lexer.token() == Token.LPAREN) {
+            if (lexer.token() == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
         }
 
@@ -2356,7 +2356,7 @@ public class SQLStatementParser extends SQLParser {
 
         stmt.setTable(this.exprParser.name());
 
-        accept(Token.LPAREN);
+        accept(Token.LEFT_PARENTHESES);
 
         for (;;) {
             SQLSelectOrderByItem item = this.exprParser.parseSelectOrderByItem();
@@ -2368,7 +2368,7 @@ public class SQLStatementParser extends SQLParser {
             }
             break;
         }
-        accept(Token.RPAREN);
+        accept(Token.RIGHT_PARENTHESES);
 
         return stmt;
     }
@@ -2517,7 +2517,7 @@ public class SQLStatementParser extends SQLParser {
 
         createView.setName(exprParser.name());
 
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
 
             for (;;) {
@@ -2561,7 +2561,7 @@ public class SQLStatementParser extends SQLParser {
                 }
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.token == Token.COMMENT) {
@@ -2627,7 +2627,7 @@ public class SQLStatementParser extends SQLParser {
 
         if (odps) {
             acceptIdentifier("COLUMNS");
-            accept(Token.LPAREN);
+            accept(Token.LEFT_PARENTHESES);
         }
 
         SQLAlterTableAddColumn item = new SQLAlterTableAddColumn();
@@ -2646,7 +2646,7 @@ public class SQLStatementParser extends SQLParser {
         }
 
         if (odps) {
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
         return item;
     }
@@ -2746,7 +2746,7 @@ public class SQLStatementParser extends SQLParser {
             }
         }
 
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
         } else {
             item.setName(this.exprParser.name());
@@ -2760,7 +2760,7 @@ public class SQLStatementParser extends SQLParser {
                 }
             }
 
-            accept(Token.LPAREN);
+            accept(Token.LEFT_PARENTHESES);
         }
 
         for (;;) {
@@ -2772,7 +2772,7 @@ public class SQLStatementParser extends SQLParser {
             }
             break;
         }
-        accept(Token.RPAREN);
+        accept(Token.RIGHT_PARENTHESES);
 
         if (lexer.token == Token.COMMENT) {
             lexer.nextToken();
@@ -2792,10 +2792,10 @@ public class SQLStatementParser extends SQLParser {
         accept(Token.OPEN);
         stmt.setCursorName(exprParser.name());
 
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
             this.exprParser.names(stmt.getColumns(), stmt);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.token == Token.FOR) {
@@ -2809,7 +2809,7 @@ public class SQLStatementParser extends SQLParser {
                 throw new ParserException("TODO " + lexer.info());
             }
         }
-        accept(Token.SEMI);
+        accept(Token.SEMICOLON);
         stmt.setAfterSemi(true);
         return stmt;
     }
@@ -2844,7 +2844,7 @@ public class SQLStatementParser extends SQLParser {
         SQLCloseStatement stmt = new SQLCloseStatement();
         accept(Token.CLOSE);
         stmt.setCursorName(exprParser.name());
-        accept(Token.SEMI);
+        accept(Token.SEMICOLON);
         stmt.setAfterSemi(true);
         return stmt;
     }
@@ -2875,12 +2875,12 @@ public class SQLStatementParser extends SQLParser {
 
         accept(Token.INTO);
         
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
             SQLSelect select = this.createSQLSelectParser().select();
             SQLSubqueryTableSource tableSource = new SQLSubqueryTableSource(select);
             stmt.setInto(tableSource);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         } else {
             stmt.setInto(exprParser.name());
         }
@@ -2956,15 +2956,15 @@ public class SQLStatementParser extends SQLParser {
                 accept(Token.THEN);
                 accept(Token.INSERT);
 
-                if (lexer.token == Token.LPAREN) {
-                    accept(Token.LPAREN);
+                if (lexer.token == Token.LEFT_PARENTHESES) {
+                    accept(Token.LEFT_PARENTHESES);
                     exprParser.exprList(insertClause.getColumns(), insertClause);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
                 accept(Token.VALUES);
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 exprParser.exprList(insertClause.getValues(), insertClause);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 if (lexer.token == Token.WHERE) {
                     lexer.nextToken();
@@ -2998,10 +2998,10 @@ public class SQLStatementParser extends SQLParser {
                 errorClause.setInto(exprParser.name());
             }
 
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
                 errorClause.setSimpleExpression(exprParser.expr());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             if (lexer.token == Token.REJECT) {
@@ -3044,14 +3044,14 @@ public class SQLStatementParser extends SQLParser {
         Token token = lexer.token;
         if (token == Token.PARTITION) {
             lexer.nextToken();
-            this.accept(Token.LPAREN);
+            this.accept(Token.LEFT_PARENTHESES);
             for (;;) {
                 stmt.getPartition().add(this.exprParser.expr());
                 if (lexer.token == Token.COMMA) {
                     lexer.nextToken();
                     continue;
                 }
-                if (lexer.token == Token.RPAREN) {
+                if (lexer.token == Token.RIGHT_PARENTHESES) {
                     lexer.nextToken();
                     break;
                 }
@@ -3081,14 +3081,14 @@ public class SQLStatementParser extends SQLParser {
             lexer.nextToken();
             entry.setAlias(alias);
 
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
                 exprParser.names(entry.getColumns());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             accept(Token.AS);
-            accept(Token.LPAREN);
+            accept(Token.LEFT_PARENTHESES);
 
             switch (lexer.token) {
                 case VALUES:
@@ -3116,7 +3116,7 @@ public class SQLStatementParser extends SQLParser {
                     break;
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             withQueryClause.addEntry(entry);
 
@@ -3150,12 +3150,12 @@ public class SQLStatementParser extends SQLParser {
         for (int i = 0; ; ++i) {
             int startPos = lexer.pos() - 1;
 
-            if (lexer.token() != Token.LPAREN) {
+            if (lexer.token() != Token.LEFT_PARENTHESES) {
                 throw new ParserException("syntax error, expect ')', " + lexer.info());
             }
             lexer.nextTokenValue();
 
-            if (lexer.token() != Token.RPAREN) {
+            if (lexer.token() != Token.RIGHT_PARENTHESES) {
                 List<SQLExpr> valueExprList;
                 if (columnSize > 0) {
                     valueExprList = new ArrayList<SQLExpr>(columnSize);
@@ -3176,7 +3176,7 @@ public class SQLStatementParser extends SQLParser {
                         }
                         lexer.nextTokenComma();
 
-                        if (lexer.token != Token.COMMA && lexer.token != Token.RPAREN) {
+                        if (lexer.token != Token.COMMA && lexer.token != Token.RIGHT_PARENTHESES) {
                             expr = this.exprParser.exprRest(expr);
                         }
                     } else if (lexer.token() == Token.LITERAL_CHARS) {
@@ -3187,7 +3187,7 @@ public class SQLStatementParser extends SQLParser {
                             expr = new SQLCharExpr(lexer.stringVal());
                         }
                         lexer.nextTokenComma();
-                        if (lexer.token != Token.COMMA && lexer.token != Token.RPAREN) {
+                        if (lexer.token != Token.COMMA && lexer.token != Token.RIGHT_PARENTHESES) {
                             expr = this.exprParser.exprRest(expr);
                         }
                     } else if (lexer.token() == Token.LITERAL_NCHARS) {
@@ -3198,7 +3198,7 @@ public class SQLStatementParser extends SQLParser {
                             expr = new SQLNCharExpr(lexer.stringVal());
                         }
                         lexer.nextTokenComma();
-                        if (lexer.token != Token.COMMA && lexer.token != Token.RPAREN) {
+                        if (lexer.token != Token.COMMA && lexer.token != Token.RIGHT_PARENTHESES) {
                             expr = this.exprParser.exprRest(expr);
                         }
                     } else if (lexer.token == Token.NULL) {
@@ -3209,7 +3209,7 @@ public class SQLStatementParser extends SQLParser {
                             expr = new SQLNullExpr();
                         }
                         lexer.nextTokenComma();
-                        if (lexer.token != Token.COMMA && lexer.token != Token.RPAREN) {
+                        if (lexer.token != Token.COMMA && lexer.token != Token.RIGHT_PARENTHESES) {
                             expr = this.exprParser.exprRest(expr);
                         }
                     } else {
@@ -3221,13 +3221,13 @@ public class SQLStatementParser extends SQLParser {
                         expr.setParent(values);
                         lexer.nextTokenValue();
                         continue;
-                    } else if (lexer.token() == Token.RPAREN) {
+                    } else if (lexer.token() == Token.RIGHT_PARENTHESES) {
                         valueExprList.add(expr);
                         expr.setParent(values);
                         break;
                     } else {
                         expr = this.exprParser.primaryRest(expr);
-                        if (lexer.token() != Token.COMMA && lexer.token() != Token.RPAREN) {
+                        if (lexer.token() != Token.COMMA && lexer.token() != Token.RIGHT_PARENTHESES) {
                             expr = this.exprParser.exprRest(expr);
                         }
 
@@ -3253,7 +3253,7 @@ public class SQLStatementParser extends SQLParser {
                 valueClauseList.add(values);
             }
 
-            if (lexer.token() != Token.RPAREN) {
+            if (lexer.token() != Token.RIGHT_PARENTHESES) {
                 throw new ParserException("syntax error. " + lexer.info());
             }
 

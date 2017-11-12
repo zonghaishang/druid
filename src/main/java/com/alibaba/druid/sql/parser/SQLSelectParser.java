@@ -22,7 +22,6 @@ import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.db2.ast.stmt.DB2SelectQueryBlock;
 import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlOrderingExpr;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.util.FnvHash;
 import com.alibaba.druid.util.JdbcConstants;
 
@@ -165,11 +164,11 @@ public class SQLSelectParser extends SQLParser {
     }
 
     public SQLSelectQuery query() {
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
 
             SQLSelectQuery select = query();
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -243,16 +242,16 @@ public class SQLSelectParser extends SQLParser {
                 lexer.nextToken();
                 entry.setAlias(alias);
 
-                if (lexer.token == Token.LPAREN) {
+                if (lexer.token == Token.LEFT_PARENTHESES) {
                     lexer.nextToken();
                     exprParser.names(entry.getColumns());
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
 
                 accept(Token.AS);
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 entry.setSubQuery(select());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 withQueryClause.addEntry(entry);
 
@@ -286,14 +285,14 @@ public class SQLSelectParser extends SQLParser {
             lexer.nextToken();
             entry.setAlias(alias);
 
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
                 exprParser.names(entry.getColumns());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             accept(Token.AS);
-            accept(Token.LPAREN);
+            accept(Token.LEFT_PARENTHESES);
 
             switch (lexer.token) {
                 case SELECT:
@@ -303,7 +302,7 @@ public class SQLSelectParser extends SQLParser {
                     break;
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             withQueryClause.addEntry(entry);
 
@@ -384,12 +383,12 @@ public class SQLSelectParser extends SQLParser {
             SQLSelectGroupByClause groupBy = new SQLSelectGroupByClause();
             if (lexer.identifierEquals(FnvHash.Constants.ROLLUP)) {
                 lexer.nextToken();
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 groupBy.setWithRollUp(true);
             }
             if (lexer.identifierEquals(FnvHash.Constants.CUBE)) {
                 lexer.nextToken();
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 groupBy.setWithCube(true);
             }
 
@@ -406,7 +405,7 @@ public class SQLSelectParser extends SQLParser {
                 lexer.nextToken();
             }
             if (groupBy.isWithRollUp() || groupBy.isWithCube()) {
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             if (lexer.token == (Token.HAVING)) {
@@ -529,25 +528,25 @@ public class SQLSelectParser extends SQLParser {
     }
 
     public SQLTableSource parseTableSource() {
-        if (lexer.token == Token.LPAREN) {
+        if (lexer.token == Token.LEFT_PARENTHESES) {
             lexer.nextToken();
             SQLTableSource tableSource;
             if (lexer.token == Token.SELECT || lexer.token == Token.WITH
             		|| lexer.token == Token.SEL) {
                 SQLSelect select = select();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 SQLSelectQuery query = queryRest(select.getQuery());
                 if (query instanceof SQLUnionQuery) {
                     tableSource = new SQLUnionQueryTableSource((SQLUnionQuery) query);
                 } else {
                     tableSource = new SQLSubqueryTableSource(select);
                 }
-            } else if (lexer.token == Token.LPAREN) {
+            } else if (lexer.token == Token.LEFT_PARENTHESES) {
                 tableSource = parseTableSource();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             } else {
                 tableSource = parseTableSource();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             return parseTableSourceRest(tableSource);
@@ -685,7 +684,7 @@ public class SQLSelectParser extends SQLParser {
 
 
             SQLTableSource rightTableSource;
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 lexer.nextToken();
                 if (lexer.token == Token.SELECT) {
                     SQLSelect select = this.select();
@@ -693,7 +692,7 @@ public class SQLSelectParser extends SQLParser {
                 } else  {
                     rightTableSource = this.parseTableSource();
                 }
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             } else {
                 SQLExpr expr = this.expr();
                 rightTableSource = new SQLExprTableSource(expr);
@@ -705,11 +704,11 @@ public class SQLSelectParser extends SQLParser {
                 Lexer.SavePoint savePoint = lexer.mark();
                 lexer.nextToken();
 
-                if (lexer.token == Token.LPAREN) {
+                if (lexer.token == Token.LEFT_PARENTHESES) {
                     lexer.nextToken();
                     join.setRight(rightTableSource);
                     this.exprParser.exprList(join.getUsing(), join);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 } else if (lexer.token == Token.IDENTIFIER) {
                     lexer.reset(savePoint);
                     join.setRight(rightTableSource);
@@ -725,7 +724,7 @@ public class SQLSelectParser extends SQLParser {
 
             if (lexer.token == Token.WITH) {
                 lexer.nextToken();
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
 
                 for (;;) {
                     SQLExpr hintExpr = this.expr();
@@ -740,7 +739,7 @@ public class SQLSelectParser extends SQLParser {
                     }
                 }
 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             join.setRight(rightTableSource);
@@ -760,10 +759,10 @@ public class SQLSelectParser extends SQLParser {
                     || lexer.identifierEquals(FnvHash.Constants.USING)) {
                 Lexer.SavePoint savePoint = lexer.mark();
                 lexer.nextToken();
-                if (lexer.token == Token.LPAREN) {
+                if (lexer.token == Token.LEFT_PARENTHESES) {
                     lexer.nextToken();
                     this.exprParser.exprList(join.getUsing(), join);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 } else {
                     lexer.reset(savePoint);
                 }

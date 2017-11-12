@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.druid.sql.parser.*;
-import com.alibaba.druid.util.FnvHash;
 import com.alibaba.druid.util.JdbcConstants;
 
 public class MySqlLexer extends Lexer {
@@ -71,7 +70,7 @@ public class MySqlLexer extends Lexer {
 
     public MySqlLexer(char[] input, int inputLength, boolean skipComment){
         super(input, inputLength, skipComment);
-        super.keywods = DEFAULT_MYSQL_KEYWORDS;
+        super.keywords = DEFAULT_MYSQL_KEYWORDS;
     }
 
     public MySqlLexer(String input){
@@ -81,7 +80,7 @@ public class MySqlLexer extends Lexer {
     public MySqlLexer(String input, SQLParserFeature... features){
         super(input, true);
         this.keepComments = true;
-        super.keywods = DEFAULT_MYSQL_KEYWORDS;
+        super.keywords = DEFAULT_MYSQL_KEYWORDS;
 
         for (SQLParserFeature feature : features) {
             config(feature, true);
@@ -92,7 +91,7 @@ public class MySqlLexer extends Lexer {
         super(input, skipComment);
         this.skipComment = skipComment;
         this.keepComments = keepComments;
-        super.keywods = DEFAULT_MYSQL_KEYWORDS;
+        super.keywords = DEFAULT_MYSQL_KEYWORDS;
     }
 
     public void scanSharp() {
@@ -384,7 +383,7 @@ public class MySqlLexer extends Lexer {
                 return;
             }
 
-            Token tok = keywods.getKeyword(hash_lower);
+            Token tok = keywords.getKeyword(hash_lower);
             if (tok != null) {
                 token = tok;
                 if (token == Token.IDENTIFIER) {
@@ -496,7 +495,7 @@ public class MySqlLexer extends Lexer {
             char next_2 = charAt(pos + 2);
             if (isDigit(next_2)) {
                 scanChar();
-                token = Token.SUB;
+                token = Token.SUBTRACT;
                 return;
             }
         } else if (ch != '/') {

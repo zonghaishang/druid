@@ -16,7 +16,6 @@
 package com.alibaba.druid.sql.parser;
 
 import com.alibaba.druid.sql.ast.statement.SQLCreateTableStatement;
-import com.alibaba.druid.sql.dialect.hive.stmt.HiveCreateTableStatement;
 
 public class SQLParser {
     protected final Lexer lexer;
@@ -115,7 +114,7 @@ public class SQLParser {
                 return alias;
             }
 
-            if (lexer.token == Token.LPAREN) {
+            if (lexer.token == Token.LEFT_PARENTHESES) {
                 return null;
             }
 

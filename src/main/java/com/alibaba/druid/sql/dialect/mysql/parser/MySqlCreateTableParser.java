@@ -150,7 +150,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                                 lexer.nextToken();
                             }
                         }
-                        accept(Token.RPAREN);
+                        accept(Token.RIGHT_PARENTHESES);
                         
                         if (lexer.identifierEquals("USING")) {
                             lexer.nextToken();
@@ -188,7 +188,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                 }
             }
 
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         for (;;) {
@@ -399,7 +399,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                 accept(Token.LPAREN);
                 SQLTableSource tableSrc = this.createSQLSelectParser().parseTableSource();
                 stmt.getTableOptions().put("UNION", tableSrc);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 continue;
             }
 
@@ -455,7 +455,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                     }
 
                     accept(Token.LPAREN);
-                    if (lexer.token() != Token.RPAREN) {
+                    if (lexer.token() != Token.RIGHT_PARENTHESES) {
                         for (;;) {
                             clause.addColumn(this.exprParser.name());
                             if (lexer.token() == Token.COMMA) {
@@ -465,7 +465,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                             break;
                         }
                     }
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
 
                     partitionClause = clause;
 
@@ -485,7 +485,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
 
                     accept(Token.LPAREN);
                     this.exprParser.exprList(clause.getColumns(), clause);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                     partitionClause = clause;
 
                     partitionClauseRest(clause);
@@ -503,7 +503,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                     if (lexer.token() == Token.LPAREN) {
                         lexer.nextToken();
                         clause.addColumn(this.exprParser.expr());
-                        accept(Token.RPAREN);
+                        accept(Token.RIGHT_PARENTHESES);
                     } else {
                         acceptIdentifier("COLUMNS");
                         accept(Token.LPAREN);
@@ -515,7 +515,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                             }
                             break;
                         }
-                        accept(Token.RPAREN);
+                        accept(Token.RIGHT_PARENTHESES);
                     }
                     partitionClause = clause;
 
@@ -538,7 +538,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                             break;
                         }
                     }
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
 
                 stmt.setPartitioning(partitionClause);
@@ -578,7 +578,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
         if (lexer.token() == Token.LPAREN) {
             lexer.nextToken();
             clause.addColumn(this.exprParser.expr());
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         } else {
             acceptIdentifier("COLUMNS");
             accept(Token.LPAREN);
@@ -590,7 +590,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                 }
                 break;
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
         return clause;
     }
@@ -644,7 +644,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                     }
                     break;
                 }
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 subPartitionByClause = subPartitionKey;
 
@@ -663,7 +663,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
 
                 accept(Token.LPAREN);
                 subPartitionHash.setExpr(this.exprParser.expr());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 subPartitionByClause = subPartitionHash;
 
             } else if (lexer.identifierEquals("LIST")) {
@@ -687,7 +687,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                     } else {
                         subPartitionList.setExpr(expr);
                     }
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 } else {
                     acceptIdentifier("COLUMNS");
                     accept(Token.LPAREN);
@@ -699,7 +699,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                         }
                         break;
                     }
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
                 subPartitionByClause = subPartitionList;
             }
@@ -710,7 +710,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                 accept(Token.LPAREN);
 
                 SQLAssignItem option = this.exprParser.parseAssignItem();
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 option.setParent(subPartitionByClause);
 
@@ -823,7 +823,7 @@ public class MySqlCreateTableParser extends SQLCreateTableParser {
                     lexer.nextToken();
                 }
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             if (name != null) {
                 key.setName(name);

@@ -17,11 +17,8 @@ package com.alibaba.druid.sql.dialect.phoenix.parser;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLInsertInto;
-import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.parser.Lexer;
-import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.Token;
 
@@ -39,7 +36,7 @@ public class PhoenixStatementParser extends SQLStatementParser {
 
     @Override
     protected void parseInsertColumns(SQLInsertInto insert) {
-        if (lexer.token() == Token.RPAREN ) {
+        if (lexer.token() == Token.RIGHT_PARENTHESES) {
             return;
         }
 
@@ -61,9 +58,9 @@ public class PhoenixStatementParser extends SQLStatementParser {
                 } else if (text.equalsIgnoreCase("CHAR")) {
                     String dataType = text;
                     lexer.nextToken();
-                    accept(Token.LPAREN);
+                    accept(Token.LEFT_PARENTHESES);
                     SQLExpr char_len = this.exprParser.primary();
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                     dataType += ("(" + char_len.toString() + ")");
                     expr.getAttributes().put("dataType", dataType);
                 }

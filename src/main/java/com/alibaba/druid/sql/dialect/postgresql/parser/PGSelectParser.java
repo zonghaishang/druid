@@ -57,7 +57,7 @@ public class PGSelectParser extends SQLSelectParser {
             accept(Token.LPAREN);
             PGValuesQuery valuesQuery = new PGValuesQuery();
             this.exprParser.exprList(valuesQuery.getValues(), valuesQuery);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
             return queryRest(valuesQuery);
         }
 
@@ -68,7 +68,7 @@ public class PGSelectParser extends SQLSelectParser {
             if (select instanceof SQLSelectQueryBlock) {
                 ((SQLSelectQueryBlock) select).setParenthesized(true);
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -278,7 +278,7 @@ public class PGSelectParser extends SQLSelectParser {
                 
                 lexer.nextToken();
                 parserParameters(functionTableSource.getParameters());
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 return super.parseTableSourceRest(functionTableSource);
             }
@@ -299,11 +299,11 @@ public class PGSelectParser extends SQLSelectParser {
             parameter.setDataType(this.exprParser.parseDataType());
 
             parameters.add(parameter);
-            if (lexer.token() == Token.COMMA || lexer.token() == Token.SEMI) {
+            if (lexer.token() == Token.COMMA || lexer.token() == Token.SEMICOLON) {
                 lexer.nextToken();
             }
 
-            if (lexer.token() != Token.BEGIN && lexer.token() != Token.RPAREN) {
+            if (lexer.token() != Token.BEGIN && lexer.token() != Token.RIGHT_PARENTHESES) {
                 continue;
             }
 

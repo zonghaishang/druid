@@ -20,7 +20,6 @@ import com.alibaba.druid.sql.ast.SQLLimit;
 import com.alibaba.druid.sql.ast.SQLOrderingSpecification;
 import com.alibaba.druid.sql.ast.SQLSetQuantifier;
 import com.alibaba.druid.sql.ast.expr.SQLListExpr;
-import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectOrderByItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
@@ -50,7 +49,7 @@ public class OdpsSelectParser extends SQLSelectParser {
             lexer.nextToken();
 
             SQLSelectQuery select = query();
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return queryRest(select);
         }
@@ -142,7 +141,7 @@ public class OdpsSelectParser extends SQLSelectParser {
                 accept(Token.LPAREN);
                 SQLListExpr listExpr = new SQLListExpr();
                 this.exprParser.exprList(listExpr.getItems(), listExpr);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 listExpr.setParent(tableSource);
 
@@ -160,7 +159,7 @@ public class OdpsSelectParser extends SQLSelectParser {
 
             accept(Token.LPAREN);
             this.exprParser.names(tableSource.getColumns(), tableSource);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
 
             return tableSource;
         }

@@ -17,13 +17,21 @@ package com.alibaba.druid.sql.dialect.postgresql.parser;
 
 import com.alibaba.druid.sql.ast.SQLDataType;
 import com.alibaba.druid.sql.ast.SQLExpr;
-import com.alibaba.druid.sql.ast.expr.*;
+import com.alibaba.druid.sql.ast.expr.SQLArrayExpr;
+import com.alibaba.druid.sql.ast.expr.SQLBinaryExpr;
+import com.alibaba.druid.sql.ast.expr.SQLCharExpr;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLTimestampExpr;
+import com.alibaba.druid.sql.ast.expr.SQLUnaryExpr;
+import com.alibaba.druid.sql.ast.expr.SQLUnaryOperator;
+import com.alibaba.druid.sql.ast.expr.SQLVariantRefExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGBoxExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCidrExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGCircleExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGDateField;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGExtractExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGInetExpr;
+import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGIntervalExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGLineSegmentsExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGMacAddrExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGPointExpr;
@@ -91,17 +99,17 @@ public class PGExprParser extends SQLExprParser {
             SQLArrayExpr array = new SQLArrayExpr();
             array.setExpr(new SQLIdentifierExpr(lexer.stringVal()));
             lexer.nextToken();
-            accept(Token.LBRACKET);
+            accept(Token.LEFT_BRACKET);
             this.exprList(array.getValues(), array);
-            accept(Token.RBRACKET);
+            accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         } else if (lexer.token() == Token.POUND) {
             lexer.nextToken();
-            if (lexer.token() == Token.LBRACE) {
+            if (lexer.token() == Token.LEFT_BRACE) {
                 lexer.nextToken();
                 String varName = lexer.stringVal();
                 lexer.nextToken();
-                accept(Token.RBRACE);
+                accept(Token.RIGHT_BRACE);
                 SQLVariantRefExpr expr = new SQLVariantRefExpr("#{" + varName + "}");
                 return primaryRest(expr);
             } else {
@@ -117,7 +125,7 @@ public class PGExprParser extends SQLExprParser {
     @Override
     protected SQLExpr parseInterval() {
         accept(Token.INTERVAL);
-        SQLIntervalExpr intervalExpr = new SQLIntervalExpr();
+        PGIntervalExpr intervalExpr=new PGIntervalExpr();
         if (lexer.token() != Token.LITERAL_CHARS) {
             return new SQLIdentifierExpr("INTERVAL");
         }
@@ -127,7 +135,7 @@ public class PGExprParser extends SQLExprParser {
     }
 
     public SQLExpr primaryRest(SQLExpr expr) {
-        if (lexer.token() == Token.COLONCOLON) {
+        if (lexer.token() == Token.COLON_COLON) {
             lexer.nextToken();
             SQLDataType dataType = this.parseDataType();
             
@@ -139,12 +147,12 @@ public class PGExprParser extends SQLExprParser {
             return primaryRest(castExpr);
         }
         
-        if (lexer.token() == Token.LBRACKET) {
+        if (lexer.token() == Token.LEFT_BRACKET) {
             SQLArrayExpr array = new SQLArrayExpr();
             array.setExpr(expr);
             lexer.nextToken();
             this.exprList(array.getValues(), array);
-            accept(Token.RBRACKET);
+            accept(Token.RIGHT_BRACKET);
             return primaryRest(array);
         }
         
@@ -188,7 +196,7 @@ public class PGExprParser extends SQLExprParser {
                 
                 return primaryRest(timestamp);     
             } else if ("EXTRACT".equalsIgnoreCase(ident)) {
-                accept(Token.LPAREN);
+                accept(Token.LEFT_PARENTHESES);
                 
                 PGExtractExpr extract = new PGExtractExpr();
                 
@@ -203,7 +211,7 @@ public class PGExprParser extends SQLExprParser {
                 
                 extract.setSource(source);
                 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 
                 return primaryRest(extract);     
             } else if ("POINT".equalsIgnoreCase(ident)) {

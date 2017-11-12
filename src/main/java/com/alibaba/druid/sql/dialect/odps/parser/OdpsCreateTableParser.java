@@ -99,7 +99,7 @@ public class OdpsCreateTableParser extends SQLCreateTableParser {
                     }
                 }
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
         
         if (lexer.token() == Token.COMMENT) {
@@ -134,7 +134,7 @@ public class OdpsCreateTableParser extends SQLCreateTableParser {
                 }
             }
             
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.identifierEquals("CLUSTERED")) {
@@ -142,7 +142,7 @@ public class OdpsCreateTableParser extends SQLCreateTableParser {
             accept(Token.BY);
             accept(Token.LPAREN);
             this.exprParser.names(stmt.getClusteredBy());
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.identifierEquals("SORTED")) {
@@ -150,7 +150,7 @@ public class OdpsCreateTableParser extends SQLCreateTableParser {
             accept(Token.BY);
             accept(Token.LPAREN);
             this.exprParser.names(stmt.getSortedBy());
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (stmt.getClusteredBy().size() > 0 || stmt.getSortedBy().size() > 0) {

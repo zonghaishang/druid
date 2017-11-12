@@ -32,7 +32,6 @@ import com.alibaba.druid.sql.parser.ParserException;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.parser.Token;
 import com.alibaba.druid.util.FnvHash;
-import com.alibaba.druid.util.JdbcConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +125,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
         if (lexer.token() == (Token.LPAREN)) {
             lexer.nextToken();
             this.exprParser.exprList(stmt.getColumns(), stmt);
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         if (lexer.token() == (Token.VALUES)) {
@@ -138,7 +137,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
                 this.exprParser.exprList(valuesCaluse.getValues(), valuesCaluse);
                 stmt.addValueCause(valuesCaluse);
 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
                 if (lexer.token() == Token.COMMA) {
                     lexer.nextToken();
                     continue;
@@ -160,7 +159,7 @@ public class PGSQLStatementParser extends SQLStatementParser {
                     List<SQLExpr> onConflictTarget = new ArrayList<SQLExpr>();
                     this.exprParser.exprList(onConflictTarget, stmt);
                     stmt.setOnConflictTarget(onConflictTarget);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
 
                 if (lexer.token() == Token.ON) {

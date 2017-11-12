@@ -100,7 +100,7 @@ public class OdpsStatementParser extends SQLStatementParser {
 
                 accept(Token.LPAREN);
                 parseAssignItems(stmt.getPartition(), stmt);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             accept(Token.COMPUTE);
@@ -153,7 +153,7 @@ public class OdpsStatementParser extends SQLStatementParser {
             if (lexer.token() == Token.LPAREN) {
                 lexer.nextToken();
                 this.exprParser.names(stmt.getColumns(), stmt);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             if (lexer.token() == Token.PARTITION) {
@@ -161,7 +161,7 @@ public class OdpsStatementParser extends SQLStatementParser {
 
                 accept(Token.LPAREN);
                 parseAssignItems(stmt.getPartition(), stmt);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             if (lexer.token() == Token.LITERAL_INT) {
@@ -242,7 +242,7 @@ public class OdpsStatementParser extends SQLStatementParser {
                 SQLSelectParser selectParser = createSQLSelectParser();
                 SQLSelect select = selectParser.select();
 
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
 
                 String alias = lexer.stringVal();
                 accept(Token.IDENTIFIER);
@@ -308,7 +308,7 @@ public class OdpsStatementParser extends SQLStatementParser {
                     lexer.nextToken();
                 }
             }
-            accept(Token.RPAREN);
+            accept(Token.RIGHT_PARENTHESES);
         }
 
         SQLSelect query = selectParser.select();
@@ -415,7 +415,7 @@ public class OdpsStatementParser extends SQLStatementParser {
             if (lexer.token() == Token.LPAREN) {
                 lexer.nextToken();
                 this.exprParser.names(stmt.getColumns(), stmt);
-                accept(Token.RPAREN);
+                accept(Token.RIGHT_PARENTHESES);
             }
 
             return stmt;
@@ -467,7 +467,7 @@ public class OdpsStatementParser extends SQLStatementParser {
                 if (lexer.token() == Token.LPAREN) {
                     lexer.nextToken();
                     this.exprParser.names(stmt.getColumns(), stmt);
-                    accept(Token.RPAREN);
+                    accept(Token.RIGHT_PARENTHESES);
                 }
             } else if (lexer.identifierEquals("RESOURCE")) {
                 lexer.nextToken();
